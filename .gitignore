@@ -1,0 +1,34 @@
+# Ignore virtual environments (Windows and Mac)
+env/
+env310/
+tf215env/
+venv/
+.venv/
+
+# Ignore Mac system files
+.DS_Store
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Model and data cache
+*.h5
+*.npy
+*.csv
+*.pkl
+*.joblib
+
+# IDE/editor-specific stuff
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Token/API keys or secrets (if in a config file)
+secrets.json
+.env
