@@ -1,0 +1,9 @@
+numpy==2.2.4
+pandas==2.2.3
+ta==0.11.0
+tensorflow==2.19.0
+scikit-learn==1.6.1
+joblib==1.2.0
+python-binance==1.0.17
+matplotlib==3.8.0
+requests==2.32.3

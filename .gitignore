@@ -1,34 +1,36 @@
-# Ignore virtual environments (Windows and Mac)
+# ==== Virtual Environments ====
 env/
 env310/
 tf215env/
 venv/
 .venv/
 
-# Ignore Mac system files
-.DS_Store
+# ==== OS/System Files ====
+.DS_Store      # macOS Finder metadata
+Thumbs.db      # Windows thumbnail cache
 
-# Python cache
+# ==== Python Cache ====
 __pycache__/
 *.py[cod]
 
-# Jupyter notebook checkpoints
+# ==== Jupyter Notebook Checkpoints ====
 .ipynb_checkpoints/
 
-# Model and data cache
+# ==== Model & Data Files ====
 *.h5
 *.npy
-*.csv
 *.pkl
 *.joblib
+*.csv
 
-# IDE/editor-specific stuff
+
+# ==== Logs ====
+*.log
+
+# ==== IDE/Editor Settings ====
 .vscode/
 .idea/
 
-# Logs
-*.log
-
-# Token/API keys or secrets (if in a config file)
+# ==== Secrets / Configs ====
 secrets.json
 .env
