@@ -29,8 +29,8 @@ class SequenceGenerator(tf.keras.utils.Sequence):
         return X_batch, y_batch
 
 # ---- Create Generator ----
-gen = SequenceGenerator("scaled_features.npy",
-                        "scaled_target.npy",
+gen = SequenceGenerator("bot_data/scaled_features.npy",
+                        "bot_data/scaled_target.npy",
                         SEQ_LEN, BATCH_SIZE)
 
 # ---- Build Model ----

@@ -28,7 +28,7 @@ print("Model architecture defined.")
 model.summary()
 
 # ---- Load Weights from the OLD model file ----
-old_model_path = "btc_lstm_full_model.h5"
+old_model_path = "backtest/Trained/btc_lstm_full_model.h5"
 print(f"Attempting to load weights from: {old_model_path}")
 try:
     # This loads ONLY the weights, ignoring the old configuration format issues
@@ -42,7 +42,7 @@ except Exception as e:
     exit() # Stop if weights couldn't be loaded
 
 # ---- Save the model using your CURRENT Keras version's format ----
-new_model_path = "btc_lstm_fixed_version.h5"
+new_model_path = "backtest/Trained/btc_lstm_fixed_version.h5"
 print(f"Saving model with current Keras format to: {new_model_path}")
 # Saving the full model captures the architecture and weights in a new, compatible format
 model.save(new_model_path, include_optimizer=True) # include_optimizer=True is often helpful

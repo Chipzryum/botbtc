@@ -9,13 +9,13 @@ SEQ_LEN     = 60
 FEATURES_N  = 37    # number of features per timestep
 BATCH_SIZE  = 512
 EPOCHS      = 1     # how many extra epochs to train
-MODEL_IN    = "btc_lstm_fixed_version.h5"
+MODEL_IN    = "backtest/Trained/btc_lstm_fixed_version.h5"
 MODEL_OUT   = "btc_lstm_continued.h5"
 
 # ── LOAD DATA ───────────────────────────────────────────────────────
 print("Loading preprocessed data...")
-X = np.load("scaled_features.npy")  # shape (n_samples, FEATURES_N)
-y = np.load("scaled_target.npy")    # shape (n_samples, 1)
+X = np.load("bot_data/scaled_features.npy")  # shape (n_samples, FEATURES_N)
+y = np.load("bot_data/scaled_target.npy")    # shape (n_samples, 1)
 
 # reshape X to (samples, SEQ_LEN, FEATURES_N)
 n_samples = X.shape[0] - (SEQ_LEN - 1)

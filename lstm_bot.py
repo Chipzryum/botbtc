@@ -38,9 +38,9 @@ ALL_FEATURES = [
 
 # ── INITIALIZE ─────────────────────────────────────────────────────
 # Load the trained model and scalers
-model      = load_model("btc_lstm_fixed_version.h5", compile=False)
-feat_scaler= joblib.load("feature_scaler.pkl")
-tgt_scaler = joblib.load("target_scaler.pkl")
+model      = load_model("backtest/Trained/btc_lstm_fixed_version.h5", compile=False)
+feat_scaler= joblib.load("bot_data/feature_scaler.pkl")
+tgt_scaler = joblib.load("bot_data/target_scaler.pkl")
 
 # ── COINBASE FETCH FUNCTIONS ────────────────────────────────────────
 def fetch_historical_data(symbol, hours=3):
