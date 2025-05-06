@@ -1,0 +1,1 @@
+# add code to get hourly data from coin base and then check the bigger trend
