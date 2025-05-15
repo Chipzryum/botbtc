@@ -9,7 +9,6 @@ import os
 # --- Strategy Class for backtesting.py ---
 class ScalpingStrategy1BT(Strategy):
     n_fractal = 2
-    trade_size = 0.01  # Define the fractional size to trade (e.g., 0.01 BTC)
 
     def init(self):
         # Compute indicators using talib
@@ -42,7 +41,7 @@ class ScalpingStrategy1BT(Strategy):
         if long_ma and long_pullback and long_fractal:
             if not self.position.is_long:
                 self.position.close()
-                self.buy(size=self.trade_size)  # Use fractional trade size
+                self.buy(size=1)  # Trade 1 unit of the scaled asset (e.g., 1 cBTC)
 
         # --- Short Entry ---
         short_ma = sma100 > sma50 and sma50 > sma20
@@ -51,7 +50,7 @@ class ScalpingStrategy1BT(Strategy):
         if short_ma and short_pullback and short_fractal:
             if not self.position.is_short:
                 self.position.close()
-                self.sell(size=self.trade_size)  # Use fractional trade size
+                self.sell(size=1)  # Trade 1 unit of the scaled asset (e.g., 1 cBTC)
 
         # --- Exit on opposite signal ---
         # backtesting.py closes on opposite signal by default if you call buy()/sell()
@@ -103,8 +102,13 @@ if __name__ == "__main__":
     # Drop rows with NaN in required columns
     df = df.dropna(subset=required_cols)
 
-    # Prices are no longer scaled. Original BTC prices will be used.
-    # The strategy will trade fractional sizes directly.
+    # Scale prices to trade a fraction of BTC (e.g., 0.01 BTC as 1 unit)
+    # This makes 1 unit of the asset in backtesting correspond to 0.01 BTC.
+    price_scalar = 0.01 
+    df['Open'] = df['Open'] * price_scalar
+    df['High'] = df['High'] * price_scalar
+    df['Low'] = df['Low'] * price_scalar
+    df['Close'] = df['Close'] * price_scalar
 
     # Run backtest (removed unsupported 'size' parameter)
     bt = Backtest(
