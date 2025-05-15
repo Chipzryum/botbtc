@@ -7,21 +7,27 @@ def detect_fractal(series, n=2, fractal_type='green'):
     Detects Williams Fractals.
     n: number of bars on each side to check for high/low.
     fractal_type: 'green' (bullish) or 'red' (bearish).
-    Returns a boolean Series.
+    Returns a boolean Series or array.
+    Compatible with both pandas Series and numpy arrays (for backtesting.py).
     """
+    # Convert to pandas Series if input is a numpy array
+    if not isinstance(series, pd.Series):
+        series = pd.Series(series)
     fractals = pd.Series(False, index=series.index)
     for i in range(n, len(series) - n):
         window = series.iloc[i-n : i+n+1]
         target_val = series.iloc[i]
 
-        if fractal_type == 'green': # Bullish fractal (low point)
+        if fractal_type == 'green':  # Bullish fractal (low point)
             if target_val == window.min() and np.count_nonzero(window == target_val) == 1:
                 fractals.iloc[i] = True
-        elif fractal_type == 'red': # Bearish fractal (high point)
+        elif fractal_type == 'red':  # Bearish fractal (high point)
             if target_val == window.max() and np.count_nonzero(window == target_val) == 1:
                 fractals.iloc[i] = True
     # Shift result by n bars to ensure fractal is confirmed only after n future bars
-    return fractals.shift(n)
+    result = fractals.shift(n)
+    # For backtesting.py, return as numpy array
+    return result.values if hasattr(series, "values") else result
 
 
 def compute_indicators(df, n_fractal=2):
