@@ -14,8 +14,9 @@ Thumbs.db      # Windows thumbnail cache
 __pycache__/
 *.py[cod]
 
-# ==== Jupyter Notebook Checkpoints ====
-.ipynb_checkpoints/
+# ==== backtests====
+.txt
+.html
 
 # ==== Model & Data Files ====
 
