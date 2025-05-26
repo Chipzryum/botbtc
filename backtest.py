@@ -1,11 +1,10 @@
 import pandas as pd
-import numpy as np
 from backtesting import Backtest, Strategy
-from ScalpingStrategy1 import compute_indicators, generate_signals  # MODIFIED IMPORT
+from ScalpingStrategy1 import compute_indicators, generate_signals
 import os
 import datetime
-import logging  # logging
-import json  # Added for saving results to JSON
+import logging
+import json
 
 # --- Configuration Variables ---
 DEBUG_LOGGING = True  # Toggle for debug logging
@@ -30,8 +29,8 @@ logger.addHandler(handler)
 
 # --- Strategy Class ---
 class ScalpingStrategy1BT(Strategy):
-    # n_fractal is now defined globally as N_FRACTAL_PERIOD
-    progress = None  # Added back as it seems to be expected by the backtesting library
+    # n_fractal is defined globally as N_FRACTAL_PERIOD
+    progress = None  # Required by the backtesting library
 
     def init(self):
         logger.info("Initializing ScalpingStrategy1BT: Preparing indicators and signals...")
@@ -163,11 +162,6 @@ if __name__ == "__main__":
         logger.info(
             f"Final Equity: {stats.get('Equity Final [$]', 'N/A')}, Return [%]: {stats.get('Return [%]', 'N/A')}, # Trades: {stats.get('# Trades', 'N/A')}")
 
-    # Save the standard backtesting.py plot
-    plot_filepath = os.path.join(BACKTESTS_DIR, 'backtest_plot.html')
-    bt.plot(filename=plot_filepath, open_browser=False)
-    logger.info(f"Standard backtest plot saved to {plot_filepath}")
-
     # Prepare data for JSON serialization
     results_data = {}
     for key, value in stats.items():
@@ -214,15 +208,15 @@ if __name__ == "__main__":
         'n_fractal_period': N_FRACTAL_PERIOD
     }
 
-    # Save detailed stats to JSON
+    # Save backtest stats to JSON
     stats_json_filepath = os.path.join(BACKTESTS_DIR, 'backtest_stats_and_data.json')
     try:
         with open(stats_json_filepath, 'w') as f:
             json.dump(results_data, f, indent=4, default=str)  # default=str for any missed complex types
-        logger.info(f"Detailed backtest stats and data saved to {stats_json_filepath}")
+        logger.info(f"Backtest stats and data saved to {stats_json_filepath}")
     except Exception as e:
         logger.error(f"Error saving stats to JSON: {e}")
 
     logger.info("--- Backtest Core Processing Complete ---")
-    logger.info(f"Results (plot and JSON data) saved in '{BACKTESTS_DIR}' directory.")
-    logger.info("To generate custom reports, use a separate reporting script that reads these output files.")
+    logger.info(f"Results (JSON data) saved in '{BACKTESTS_DIR}' directory.")
+    logger.info("To generate custom reports, use the reporting.py script that reads this JSON file.")
