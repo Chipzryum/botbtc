@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from backtesting import Backtest, Strategy
-from ScalpingStrategy1 import compute_indicators, generate_signals
+from strategies.ScalpingStrategy1 import ScalpingStrategy1 # MODIFIED: Import class and update path
 import os
 import datetime
 import logging
@@ -13,7 +13,7 @@ import warnings
 import sys  # Used by reporting part if it were standalone, not strictly needed now
 
 # --- Configuration Variables ---
-DEBUG_LOGGING = True
+DEBUG_LOGGING = False
 BACKTESTS_DIR = "Backtests"  # Unified directory for all outputs
 CSV_FILE = 'btc_minute_data.csv'
 INITIAL_CASH = 10_000
@@ -48,13 +48,18 @@ class ScalpingStrategy1BT(Strategy):
             'low': self.data.Low,
             'close': self.data.Close,
         }, index=self.data.index)
-        df_with_indicators = compute_indicators(current_data_df, n_fractal=N_FRACTAL_PERIOD)
+
+        # MODIFIED: Instantiate ScalpingStrategy1 and use its methods
+        strategy_instance = ScalpingStrategy1(params={'n_fractal': N_FRACTAL_PERIOD})
+        df_with_indicators = strategy_instance.compute_indicators(current_data_df.copy())
+
         if df_with_indicators is None:
             logger.error("Indicator computation returned None. Strategy will not generate trade signals.")
             self.signal_actions = pd.Series("HOLD", index=current_data_df.index)
             self.signal_sizes = pd.Series(0.0, index=current_data_df.index)
         else:
-            self.signal_actions, self.signal_sizes = generate_signals(df_with_indicators)
+            # MODIFIED: Use instance to generate signals
+            self.signal_actions, self.signal_sizes = strategy_instance.generate_signals(df_with_indicators)
             if not self.signal_actions.index.equals(current_data_df.index):
                 logger.warning("Signal actions index does not match data index. Reindexing to align.")
                 self.signal_actions = self.signal_actions.reindex(current_data_df.index, fill_value="HOLD")
@@ -279,6 +284,11 @@ def _write_combined_html_report_reporting(output_dir, plot_b64, metrics_html, co
 def _write_summary_text_file_reporting(stats_data, output_dir, gen_time_str, source_json_name=""):
     path = os.path.join(output_dir, 'summary.txt')
     run_conf = stats_data.get('run_config', {})
+    trades_df = stats_data.get('_trades', pd.DataFrame())
+
+    # Calculate the number of failed trades
+    failed_trades_count = trades_df[trades_df['ReturnPct'] < 0].shape[0] if not trades_df.empty else 0
+
     with open(path, 'w', encoding='utf-8') as f:
         f.write(
             f"Backtest Summary (Source: {os.path.basename(source_json_name) if source_json_name else 'N/A'})\n===================================\n\n")
@@ -308,7 +318,9 @@ def _write_summary_text_file_reporting(stats_data, output_dir, gen_time_str, sou
         for k in ['# Trades', 'Win Rate [%]', 'Profit Factor', 'Expectancy [%]', 'Avg. Trade [%]', 'Best Trade [%]',
                   'Worst Trade [%]', 'Avg. Trade Duration', 'Max. Trade Duration', 'Commissions [$]']: f.write(
             f"  {k}: {format_metric_display_value(stats_data.get(k, stats_data.get(k.replace('. ', ''), 'N/A')))}\n")
+        f.write(f"  Failed Trades: {failed_trades_count}\n")  # Add the number of failed trades
     logger.info(f"Reporting: Summary text file saved to {path}")
+
 
 
 def preprocess_stats_data_reporting(stats_json_data):

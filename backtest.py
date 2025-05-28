@@ -1,6 +1,6 @@
 import pandas as pd
 from backtesting import Backtest, Strategy
-from ScalpingStrategy1 import compute_indicators, generate_signals
+from strategies.ScalpingStrategy1 import ScalpingStrategy1  # MODIFIED: Import class and update path
 import os
 import datetime
 import logging
@@ -42,14 +42,22 @@ class ScalpingStrategy1BT(Strategy):
             'close': self.data.Close,
         }, index=self.data.index)
 
-        df_with_indicators = compute_indicators(current_data_df, n_fractal=N_FRACTAL_PERIOD)
+        # MODIFIED: Instantiate ScalpingStrategy1 and use its methods
+        # N_FRACTAL_PERIOD is a global variable in this file.
+        # ScalpingStrategy1 will use its own default for trade_size if not specified.
+        strategy_instance = ScalpingStrategy1(params={'n_fractal': N_FRACTAL_PERIOD})
+
+        # Compute indicators using the strategy instance
+        # Pass a copy of current_data_df if the method might modify it (good practice)
+        df_with_indicators = strategy_instance.compute_indicators(current_data_df.copy())
 
         if df_with_indicators is None:
             logger.error("Indicator computation returned None. Strategy will not generate trade signals.")
             self.signal_actions = pd.Series("HOLD", index=current_data_df.index)
             self.signal_sizes = pd.Series(0.0, index=current_data_df.index)
         else:
-            self.signal_actions, self.signal_sizes = generate_signals(df_with_indicators)
+            # Generate signals using the strategy instance
+            self.signal_actions, self.signal_sizes = strategy_instance.generate_signals(df_with_indicators)
 
             if not self.signal_actions.index.equals(current_data_df.index):
                 logger.warning("Signal actions index does not match data index. Reindexing to align.")
@@ -220,3 +228,4 @@ if __name__ == "__main__":
     logger.info("--- Backtest Core Processing Complete ---")
     logger.info(f"Results (JSON data) saved in '{BACKTESTS_DIR}' directory.")
     logger.info("To generate custom reports, use the reporting.py script that reads this JSON file.")
+
